@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  database:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file: .env.pg
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "$${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    networks: [rede_docker]
+
+  api:
+    image: ghcr.io/junplid/employee-doc-management.api:latest
+    container_name: api
+    pull_policy: never
+    env_file:
+      - ./app/.env
+      - ./.env.pg
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - 4000:4000
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks: [rede_docker]
+
+networks:
+  rede_docker:
+    driver: bridge

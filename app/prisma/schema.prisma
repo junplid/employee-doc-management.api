@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// registro geral de tipos de documentos da empresa
+model DocumentType {
+  id                Int                @id @default(autoincrement())
+  name              String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @default(now())
+  EmployeeDocuments EmployeeDocument[]
+
+  @@index([id, name])
+}
+
+// campos de um documento
+model DocumentField {
+  id                         Int                          @id @default(autoincrement())
+  name                       String
+  required                   Boolean                      @default(false)
+  EmployeeDocumentFieldValue EmployeeDocumentFieldValue[]
+
+  @@index([id, name, required])
+}
+
+// colaboradores
+model Employee {
+  id                Int                @id @default(autoincrement())
+  name              String
+  cpf               String
+  hiredAt           DateTime
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @default(now())
+  EmployeeDocuments EmployeeDocument[]
+
+  @@index([id, cpf])
+}
+
+// documentos do colaborador
+model EmployeeDocument {
+  id             Int     @id @default(autoincrement())
+  required       Boolean @default(true) // o doc é obrigatorio pra esse colaborador?
+  desc           String?
+  sent           Boolean @default(false)
+  employeeId     Int
+  documentTypeId Int
+
+  Employee     Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  DocumentType DocumentType @relation(fields: [documentTypeId], references: [id], onDelete: Cascade)
+
+  EmployeeDocumentFieldValues EmployeeDocumentFieldValue[]
+
+  @@index([id, sent, required, employeeId])
+}
+
+// valores do documento do colaborador
+model EmployeeDocumentFieldValue {
+  id                 Int    @id @default(autoincrement())
+  value              String @db.Text
+  employeeDocumentId Int
+  documentFieldId    Int
+
+  EmployeeDocument EmployeeDocument @relation(fields: [employeeDocumentId], references: [id], onDelete: Cascade)
+  DocumentField    DocumentField    @relation(fields: [documentFieldId], references: [id], onDelete: Cascade)
+
+  @@index([id, employeeDocumentId, documentFieldId])
+}

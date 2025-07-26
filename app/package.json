@@ -7,6 +7,7 @@
     "bcrypt": "^5.1.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "cpf-cnpj-validator": "^1.0.3",
     "dotenv": "^16.3.1",
     "express": "4.18.2",
     "express-validation": "^4.1.0",
@@ -37,8 +38,5 @@
     "start": "npx prisma migrate deploy && node dist/index.js",
     "build": "tsup",
     "obfuscate": "javascript-obfuscator dist/index.js -o dist/index.obf.js --compact true --rename-globals true"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
   }
 }

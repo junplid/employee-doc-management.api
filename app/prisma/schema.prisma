@@ -10,19 +10,23 @@ datasource db {
 // registro geral de tipos de documentos da empresa
 model DocumentType {
   id                Int                @id @default(autoincrement())
-  name              String
+  name              String             @unique
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @default(now())
   EmployeeDocuments EmployeeDocument[]
+  DocumentField     DocumentField[]
 
   @@index([id, name])
 }
 
 // campos de um documento
 model DocumentField {
-  id                         Int                          @id @default(autoincrement())
-  name                       String
-  required                   Boolean                      @default(false)
+  id           Int          @id @default(autoincrement())
+  name         String
+  required     Boolean      @default(false)
+  documentId   Int
+  DocumentType DocumentType @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
   EmployeeDocumentFieldValue EmployeeDocumentFieldValue[]
 
   @@index([id, name, required])
@@ -32,7 +36,8 @@ model DocumentField {
 model Employee {
   id                Int                @id @default(autoincrement())
   name              String
-  cpf               String
+  cpf               String             @unique
+  deleted           Boolean            @default(false)
   hiredAt           DateTime
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @default(now())

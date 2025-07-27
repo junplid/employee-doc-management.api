@@ -26,6 +26,6 @@ router.post("/send-document", SendDocument);
 router.put("/employee/:id", UpdateEmployees);
 
 router.delete("/document-type/:id", DeleteDocument);
-router.delete("/detach-document/:id", DetachDocument);
+router.delete("/detach-document", DetachDocument);
 
 export default router;
